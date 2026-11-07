@@ -66,5 +66,13 @@ services:
       - "8025:8025"
       - "1025:1025"
 
+  test:
+    image: maven:3.9.9-eclipse-temurin-21
+    working_dir: /workspace
+    volumes:
+      - .:/workspace
+    command: mvn --batch-mode test
+    profiles: ["test"]
+
 volumes:
   postgres_data:

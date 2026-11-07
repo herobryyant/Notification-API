@@ -59,8 +59,8 @@ public class RabbitConfiguration {
     }
 
     @Bean
-    Advice notificationRetryAdvice(NotificationService service, ObjectMapper objectMapper) {
-        MessageRecoverer recoverer = (message, cause) -> {
+    MessageRecoverer notificationMessageRecoverer(NotificationService service, ObjectMapper objectMapper) {
+        return (message, cause) -> {
             try {
                 NotificationMessage notification = objectMapper.readValue(message.getBody(), NotificationMessage.class);
                 service.markFailed(notification.notificationId(), "Delivery failed after retries: " + cause.getMessage());
@@ -69,10 +69,14 @@ public class RabbitConfiguration {
             }
             throw new AmqpRejectAndDontRequeueException("Notification delivery exhausted retries", cause);
         };
+    }
+
+    @Bean
+    Advice notificationRetryAdvice(MessageRecoverer notificationMessageRecoverer) {
         return RetryInterceptorBuilder.stateless()
                 .maxAttempts(3)
                 .backOffOptions(1000, 2.0, 10000)
-                .recoverer(recoverer)
+                .recoverer(notificationMessageRecoverer)
                 .build();
     }
 
