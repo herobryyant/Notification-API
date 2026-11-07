@@ -1,5 +1,7 @@
 # Real Time Notification Service
 
+[![CI](https://github.com/herobryyant/Notification-API/actions/workflows/ci.yml/badge.svg)](https://github.com/herobryyant/Notifications-API/actions/workflows/ci.yml)
+
 A small event driven email notification API built with Java 21 and Spring Boot. The API validates and stores a notification, publishes its ID to RabbitMQ, and returns immediately. A background worker sends the email through SMTP and updates delivery status in PostgreSQL. Redis applies an atomic per recipient rate limit.
 
 ## Features
